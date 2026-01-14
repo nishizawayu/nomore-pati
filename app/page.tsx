@@ -1,9 +1,25 @@
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { SignOutButton } from "@/features/auth";
+import { DayCounter, ResetButton, getDayCount } from "@/features/counter";
+import { prisma } from "@/lib/prisma";
 
 export default async function Home() {
   const session = await auth();
+
+  let dayCount = 0;
+  let startDate = new Date();
+
+  if (session?.user?.id) {
+    dayCount = await getDayCount(session.user.id);
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { startDate: true },
+    });
+    if (user) {
+      startDate = user.startDate;
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -38,10 +54,21 @@ export default async function Home() {
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         {session?.user ? (
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <p className="text-gray-600 mb-2">パチ禁継続中</p>
-            <p className="text-6xl font-bold text-blue-600">0日</p>
-            <p className="text-gray-500 mt-2">頑張って続けましょう！</p>
+          <div className="space-y-6">
+            <DayCounter dayCount={dayCount} startDate={startDate} />
+            <div className="text-center">
+              <p className="text-gray-500 mb-4">頑張って続けましょう！</p>
+              <ResetButton />
+            </div>
+            <div className="text-center">
+              <Link
+                href="/friends"
+                className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700"
+              >
+                <span>👥</span>
+                <span>フレンド</span>
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow p-6 text-center">
