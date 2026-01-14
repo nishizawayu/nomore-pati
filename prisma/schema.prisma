@@ -15,6 +15,7 @@ model User {
   name          String
   email         String   @unique
   password      String
+  image         String?  // プロフィール画像URL
   startDate     DateTime @default(now()) // パチ禁開始日
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

@@ -60,13 +60,20 @@ export default async function Home() {
               <p className="text-gray-500 mb-4">頑張って続けましょう！</p>
               <ResetButton />
             </div>
-            <div className="text-center">
+            <div className="flex justify-center gap-4">
               <Link
                 href="/friends"
                 className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700"
               >
                 <span>👥</span>
                 <span>フレンド</span>
+              </Link>
+              <Link
+                href="/profile"
+                className="inline-flex items-center gap-2 bg-gray-600 text-white px-6 py-3 rounded-md hover:bg-gray-700"
+              >
+                <span>⚙️</span>
+                <span>プロフィール</span>
               </Link>
             </div>
           </div>
