@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { SignOutButton } from "@/features/auth";
 import { DayCounter, ResetButton, getDayCount } from "@/features/counter";
+import { getPublishedNews, NewsList, News } from "@/features/news";
 import { prisma } from "@/lib/prisma";
 
 export default async function Home() {
@@ -9,6 +10,7 @@ export default async function Home() {
 
   let dayCount = 0;
   let startDate = new Date();
+  const latestNews = await getPublishedNews(3);
 
   if (session?.user?.id) {
     dayCount = await getDayCount(session.user.id);
@@ -76,6 +78,17 @@ export default async function Home() {
                 <span>プロフィール</span>
               </Link>
             </div>
+
+            {/* お知らせ */}
+            <section className="bg-white rounded-lg shadow p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-gray-800">お知らせ</h2>
+                <Link href="/news" className="text-blue-600 hover:text-blue-800 text-sm">
+                  すべて見る →
+                </Link>
+              </div>
+              <NewsList news={latestNews as News[]} />
+            </section>
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow p-6 text-center">
