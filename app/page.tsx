@@ -3,6 +3,12 @@ import Link from "next/link";
 import { SignOutButton } from "@/features/auth";
 import { DayCounter, ResetButton, getDayCount } from "@/features/counter";
 import { getPublishedNews, NewsList, News } from "@/features/news";
+import {
+  NotificationBell,
+  getNotifications,
+  getUnreadCount,
+  Notification,
+} from "@/features/notification";
 import { prisma } from "@/lib/prisma";
 
 export default async function Home() {
@@ -10,6 +16,8 @@ export default async function Home() {
 
   let dayCount = 0;
   let startDate = new Date();
+  let notifications: Notification[] = [];
+  let unreadCount = 0;
   const latestNews = await getPublishedNews(3);
 
   if (session?.user?.id) {
@@ -21,6 +29,10 @@ export default async function Home() {
     if (user) {
       startDate = user.startDate;
     }
+
+    // 通知を取得
+    notifications = (await getNotifications(session.user.id)) as Notification[];
+    unreadCount = await getUnreadCount(session.user.id);
   }
 
   return (
@@ -31,6 +43,10 @@ export default async function Home() {
           <div className="flex items-center gap-4">
             {session?.user ? (
               <>
+                <NotificationBell
+                  notifications={notifications}
+                  unreadCount={unreadCount}
+                />
                 <span className="text-gray-600">{session.user.name} さん</span>
                 <SignOutButton />
               </>
