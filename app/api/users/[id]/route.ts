@@ -1,15 +1,12 @@
-import { prisma } from "@/lib/prisma";
+import { getUserById, updateUser, deleteUser } from "@/features/user";
 import { NextRequest, NextResponse } from "next/server";
 
 type Params = { params: Promise<{ id: string }> };
 
-// GET: ユーザー詳細取得
 export async function GET(request: NextRequest, { params }: Params) {
   const { id } = await params;
 
-  const user = await prisma.user.findUnique({
-    where: { id },
-  });
+  const user = await getUserById(id);
 
   if (!user) {
     return NextResponse.json(
@@ -21,31 +18,24 @@ export async function GET(request: NextRequest, { params }: Params) {
   return NextResponse.json(user);
 }
 
-// PUT: ユーザー更新
 export async function PUT(request: NextRequest, { params }: Params) {
   const { id } = await params;
   const body = await request.json();
   const { name, email, startDate } = body;
 
-  const user = await prisma.user.update({
-    where: { id },
-    data: {
-      ...(name && { name }),
-      ...(email && { email }),
-      ...(startDate && { startDate: new Date(startDate) }),
-    },
+  const user = await updateUser(id, {
+    name,
+    email,
+    startDate: startDate ? new Date(startDate) : undefined,
   });
 
   return NextResponse.json(user);
 }
 
-// DELETE: ユーザー削除
 export async function DELETE(request: NextRequest, { params }: Params) {
   const { id } = await params;
 
-  await prisma.user.delete({
-    where: { id },
-  });
+  await deleteUser(id);
 
   return NextResponse.json({ message: "ユーザーを削除しました" });
 }
